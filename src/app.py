@@ -5,7 +5,7 @@ import time
 from data.data_interface import URLHandler
 from data.video_transcript import YTTranscript
 from rag.query_rewrite import query_rewrite
-from rag.rag import RAG
+from rag.rag import RerankRAGEnsembleVectorKeywordSearch
 
 mem_fs = MemoryFS()
 video_transcript_filename = "video_transcripts.txt"
@@ -24,13 +24,14 @@ def load_urls(urls):
         f.write(yt_transcripts)
 
     global rag
-    rag = RAG(web, video_transcript_filename, mem_fs)
+    rag = RerankRAGEnsembleVectorKeywordSearch(web, video_transcript_filename, mem_fs, "llama3.1")
 
     return "Processing complete! ✅"
 
 
 def rag_fn(message, history):
     query = query_rewrite(message)
+    print(query)
     response = rag.augment_generate(query)
     return response
 
