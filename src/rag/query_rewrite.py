@@ -1,8 +1,16 @@
 from langchain_community.llms import Ollama
 from langchain_core.prompts import ChatPromptTemplate
+from os import getenv
+
+base_url = getenv("OLLAMA_HOST")
+if base_url == None:
+    base_url = "localhost:11434"
+
+base_url = "http://"+base_url
 
 def query_rewrite(question):
     model = Ollama(
+        base_url = base_url,
         model="gemma2",
         temperature=0.0,
         )

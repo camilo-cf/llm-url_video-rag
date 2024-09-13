@@ -15,7 +15,13 @@ from langchain.retrievers.document_compressors import FlashrankRerank
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.retrievers import ContextualCompressionRetriever
 from langchain.schema import Document
+from os import getenv
 
+base_url = getenv("OLLAMA_HOST")
+if base_url == None:
+    base_url = "localhost:11434"
+
+base_url = "http://"+base_url
 
 from .in_memory_loader import InMemoryLoader
 
@@ -52,7 +58,10 @@ class RAGTemplate:
         self.docs = self.data_loaders(web_urls, yt_transcript, mem_fs)
         self.vector_store, self.split_documents = self.vector_db(self.docs)
         self.retriever, self.simple_retriever = self.retrieval(self.vector_store, self.split_documents)
-        self.llm = Ollama(model="phi3.5", temperature=0.0)
+        self.llm = Ollama(
+            base_url = base_url,
+            model="phi3.5",
+            temperature=0.0)
         # import os
         # os.environ["OPENAI_API_KEY"] = "API-KEY"
         # self.llm = ChatOpenAI(model=llm_name, temperature=0.0)
@@ -73,6 +82,7 @@ class RAGTemplate:
 
         embeddings = OllamaEmbeddings(
             # model="nomic-embed-text"
+            base_url = base_url,
             model="mxbai-embed-large"
             )
         vector_store = FAISS.from_documents(split_documents, embeddings)
