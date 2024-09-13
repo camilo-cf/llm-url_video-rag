@@ -13,7 +13,6 @@ backoff==2.2.1
 bcrypt==4.2.0
 beautifulsoup4==4.12.3
 boltons==23.0.0
-Brotli==1.0.9
 build==1.2.2
 cachetools==5.5.0
 cffi==1.16.0
@@ -31,7 +30,6 @@ distro==1.9.0
 exceptiongroup==1.2.2
 executing==2.1.0
 faiss-cpu==1.8.0
-fastapi==0.114.0
 ffmpy==0.4.0
 filelock==3.16.0
 FlashRank==0.2.9
@@ -75,31 +73,32 @@ multidict==6.1.0
 mypy-extensions==1.0.0
 nest_asyncio==1.6.0
 numpy==1.26.4
-nvidia-cublas-cu12==12.1.3.1
-nvidia-cuda-cupti-cu12==12.1.105
-nvidia-cuda-nvrtc-cu12==12.1.105
-nvidia-cuda-runtime-cu12==12.1.105
-nvidia-cudnn-cu12==9.1.0.70
-nvidia-cufft-cu12==11.0.2.54
-nvidia-curand-cu12==10.3.2.106
-nvidia-cusolver-cu12==11.4.5.107
-nvidia-cusparse-cu12==12.1.0.106
-nvidia-nccl-cu12==2.20.5
-nvidia-nvjitlink-cu12==12.6.68
-nvidia-nvtx-cu12==12.1.105
+# Enable if you have an nvidia configured env and make sure the version matches (in this case v12)
+# nvidia-cublas-cu12==12.1.3.1
+# nvidia-cuda-cupti-cu12==12.1.105
+# nvidia-cuda-nvrtc-cu12==12.1.105
+# nvidia-cuda-runtime-cu12==12.1.105
+# nvidia-cudnn-cu12==9.1.0.70
+# nvidia-cufft-cu12==11.0.2.54
+# nvidia-curand-cu12==10.3.2.106
+# nvidia-cusolver-cu12==11.4.5.107
+# nvidia-cusparse-cu12==12.1.0.106
+# nvidia-nccl-cu12==2.20.5
+# nvidia-nvjitlink-cu12==12.6.68
+# nvidia-nvtx-cu12==12.1.105
 ollama==0.3.3
 onnxruntime==1.19.2
 openai==1.44.1
-opentelemetry-api==1.27.0
-opentelemetry-exporter-otlp-proto-common==1.27.0
-opentelemetry-exporter-otlp-proto-grpc==1.27.0
-opentelemetry-instrumentation==0.48b0
-opentelemetry-instrumentation-asgi==0.48b0
-opentelemetry-instrumentation-fastapi==0.48b0
-opentelemetry-proto==1.27.0
-opentelemetry-sdk==1.27.0
-opentelemetry-semantic-conventions==0.48b0
-opentelemetry-util-http==0.48b0
+# opentelemetry-api==1.27.0
+# opentelemetry-exporter-otlp-proto-common==1.27.0
+# opentelemetry-exporter-otlp-proto-grpc==1.27.0
+# opentelemetry-instrumentation==0.48b0
+# opentelemetry-instrumentation-asgi==0.48b0
+# opentelemetry-instrumentation-fastapi==0.48b0
+# opentelemetry-proto==1.27.0
+# opentelemetry-sdk==1.27.0
+# opentelemetry-semantic-conventions==0.48b0
+# opentelemetry-util-http==0.48b0
 orjson==3.10.7
 overrides==7.7.0
 packaging==24.1
@@ -118,7 +117,6 @@ ptyprocess==0.7.0
 pure_eval==0.2.3
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
-pycosat==0.6.6
 pycparser==2.21
 pydantic==2.9.1
 pydantic_core==2.23.3
@@ -162,7 +160,7 @@ threadpoolctl==3.5.0
 tiktoken==0.7.0
 tokenizers==0.19.1
 tomlkit==0.12.0
-torch==2.4.1
+# torch==2.4.1
 tornado==6.4.1
 tqdm==4.66.4
 traitlets==5.14.3
