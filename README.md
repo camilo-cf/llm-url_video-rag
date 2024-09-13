@@ -232,9 +232,9 @@ To run the docker compose follow the next steps:
 
 ### Reproducibility
 The reproducibility of this project is very high as we have available the instructions to:
-    - Get the data (it is dynamic and public URLs so its always available)
-    - Execute the code (Easy with Docker compose and Dockerfile)
-    - All the dependencies and its versions are provided
+- Get the data (it is dynamic and public URLs so its always available)
+- Execute the code (Easy with Docker compose and Dockerfile)
+- All the dependencies and its versions are provided
 
 ## 9. Best practices
  
