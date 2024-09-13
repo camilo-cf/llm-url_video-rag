@@ -105,7 +105,7 @@ We can consider the next datasets as the foundations of this project:
 The data to validate and test the LLM can be found [here](src/app.py) and [here](src/evaluate_create_groundtruth_dataset.py) (Public URLs accessible by anyone).
 
 ## 2. RAG flow
-- A **Knowledge base** in [FAIS](src/rag/rag.py) is used.
+- A **Knowledge base** in [FAISS](src/rag/rag.py) is used.
 - A **LLM** is used as well, querying on top of the gathered Knowledge base.
 
 ## 3. Retrieval evaluation
