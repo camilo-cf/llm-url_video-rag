@@ -5,12 +5,16 @@ class URLHandler:
         self.urls_list = list(set(urls.replace(" ", "").split("\n")))
         self.youtube = [self.extract_video_id(each_url)
                         for each_url in self.urls_list
-                        if self.is_youtube(each_url)]
+                        if self.is_youtube(each_url)
+                        and each_url!=""]
         self.website = [each_url
                         for each_url in self.urls_list
-                        if not self.is_youtube(each_url)]
+                        if not self.is_youtube(each_url)
+                        and each_url!=""]
 
     def is_youtube(self, url):
+        if "wiki" in url:
+            return False
         try:
             extract.video_id(url)
             return True

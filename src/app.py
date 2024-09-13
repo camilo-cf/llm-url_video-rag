@@ -24,7 +24,10 @@ def load_urls(urls):
         f.write(yt_transcripts)
 
     global rag
-    rag = RerankRAGEnsembleVectorKeywordSearch(web, video_transcript_filename, mem_fs, "llama3.1")
+    rag = RerankRAGEnsembleVectorKeywordSearch(
+        web,
+        video_transcript_filename,
+        mem_fs)
 
     return "Processing complete! ✅"
 

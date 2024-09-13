@@ -3,8 +3,8 @@ from langchain_core.prompts import ChatPromptTemplate
 
 def query_rewrite(question):
     model = Ollama(
-        model="llama3.1",
-        temperature=0.0
+        model="gemma2",
+        temperature=0.0,
         )
 
     template = """

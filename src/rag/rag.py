@@ -1,5 +1,6 @@
 from fs.memoryfs import MemoryFS
 from langchain_community.llms import Ollama
+from langchain_openai import ChatOpenAI
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.document_loaders import TextLoader
 from langchain_community.document_loaders import WebBaseLoader
@@ -21,10 +22,11 @@ from .in_memory_loader import InMemoryLoader
 RAG_TEMPLATE = """
         <|system|>
         You are a supportive AI Assistant in a Retrieval Augmentation Generator (RAG).\
-        You should follow instructions extremely well and help the user to clarify doubts\
-        and provide insightful, truthful and direct answers. Do not retrieve HTML-like answers.
+        You should follow instructions extremely well, help the user clarify doubts,\
+        and provide insightful, truthful, and direct answers based on the context.\
+        Do not retrieve HTML-like answers. Make sure your answer is based on the CONTEXT.
 
-        Please tell "I don't know, this is not clearly in the context" if user query is not in CONTEXT.
+        If the user's query/ question is not in CONTEXT, please say, "I don't know; this is not clearly in the context."
         </section>
 
         <section>
@@ -45,11 +47,15 @@ RAG_TEMPLATE = """
 K_search = 5
 
 class RAGTemplate:
-    def __init__(self, web_urls, yt_transcript, mem_fs, llm_name="phi3.5"):
+    def __init__(self, web_urls, yt_transcript, mem_fs, llm_name="gpt-4o-mini"):
+                #  llm_name="phi3.5"):
         self.docs = self.data_loaders(web_urls, yt_transcript, mem_fs)
         self.vector_store, self.split_documents = self.vector_db(self.docs)
-        self.retriever = self.retrieval(self.vector_store, self.split_documents)
-        self.llm = Ollama(model=llm_name, temperature=0.1)
+        self.retriever, self.simple_retriever = self.retrieval(self.vector_store, self.split_documents)
+        self.llm = Ollama(model="phi3.5", temperature=0.0)
+        # import os
+        # os.environ["OPENAI_API_KEY"] = "API-KEY"
+        # self.llm = ChatOpenAI(model=llm_name, temperature=0.0)
     
     def data_loaders(self, web_urls, yt_transcript, mem_fs):
         # Loaders
@@ -65,14 +71,17 @@ class RAGTemplate:
         text_splitter = RecursiveCharacterTextSplitter()
         split_documents = text_splitter.split_documents(docs)
 
-        embeddings = OllamaEmbeddings(model="nomic-embed-text")
+        embeddings = OllamaEmbeddings(
+            # model="nomic-embed-text"
+            model="mxbai-embed-large"
+            )
         vector_store = FAISS.from_documents(split_documents, embeddings)
         return vector_store, split_documents
 
     def retrieval(self, vector_store, split_documents):
         # Simple vector search + retrieval
         retriever_vectordb = vector_store.as_retriever()
-        return retriever_vectordb
+        return retriever_vectordb, retriever_vectordb
         
     def augment_generate(self, query):
         # Augmentation and Generation
@@ -93,7 +102,7 @@ class SimpleRAGVectorSearch(RAGTemplate):
     def retrieval(self, vector_store, split_documents):
         # Simple vector search + retrieval
         retriever_vectordb = vector_store.as_retriever()
-        return retriever_vectordb
+        return retriever_vectordb, retriever_vectordb
 
 class RerankRAGVectorSearch(RAGTemplate):
     def retrieval(self, vector_store, split_documents):
@@ -106,13 +115,13 @@ class RerankRAGVectorSearch(RAGTemplate):
             base_compressor=compressor,
             base_retriever=retriever_vectordb
         )
-        return compression_retriever
+        return compression_retriever, retriever_vectordb
 
 class SimpleRAGKeywordSearch(RAGTemplate):
     def retrieval(self, vector_store, split_documents):
         # Simple keyword search + retrieval
         keyword_retriever = BM25Retriever.from_documents(split_documents)
-        return keyword_retriever
+        return keyword_retriever, keyword_retriever
 
 class RerankRAGKeywordSearch(RAGTemplate):
     def retrieval(self, vector_store, split_documents):
@@ -127,7 +136,7 @@ class RerankRAGKeywordSearch(RAGTemplate):
             base_compressor=compressor,
             base_retriever=keyword_retriever
         )
-        return compression_retriever
+        return compression_retriever, keyword_retriever
 
 class SimpleRAGEnsembleVectorKeywordSearch(RAGTemplate):
     def retrieval(self, vector_store, split_documents):
@@ -138,7 +147,7 @@ class SimpleRAGEnsembleVectorKeywordSearch(RAGTemplate):
         ensemble_retriever = EnsembleRetriever(retrievers=
                                             [retriever_vectordb,keyword_retriever],
                                             weights=[0.5, 0.5])        
-        return ensemble_retriever
+        return ensemble_retriever, keyword_retriever
 
 class RerankRAGEnsembleVectorKeywordSearch(RAGTemplate):
     def retrieval(self, vector_store, split_documents):
@@ -159,4 +168,4 @@ class RerankRAGEnsembleVectorKeywordSearch(RAGTemplate):
             base_compressor=compressor,
             base_retriever=ensemble_retriever
         )
-        return compression_retriever
+        return compression_retriever, ensemble_retriever
