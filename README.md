@@ -7,6 +7,62 @@
 
 This project was implemented for [LLM Zoomcamp](https://github.com/DataTalksClub/llm-zoomcamp) - a free course about LLMs and RAG.
 
+## Expected Usage
+1. Gather you YouTube video URLs and website URLs
+2. Paste them in the given box separated by new lines
+
+<div style="text-align: center;">
+    <img src="docs/screenshot_initial_state.png" alt="Description of the image" width="600">
+</div>
+
+3. Click the Load URLs button
+4. Wait until the processing is complete
+
+<div style="text-align: center;">
+    <img src="docs/screenshot_initial_chatbot.png" alt="Description of the image" width="600">
+</div>
+
+5. Make the questions on the URL Chat Bot Section (nexto th the Submit message button)
+6. Wait for your answer ... (the answer speed varies according the deployment system)
+
+<div style="text-align: center;">
+    <img src="docs/screenshot_chatbot_wait.png" alt="Description of the image" width="600">
+</div>
+
+7. Keep texting
+
+<div style="text-align: center;">
+    <img src="docs/screenshot.png" alt="Description of the image" width="600">
+</div>
+
+
+# Diagram & Services
+
+<div style="text-align: center;">
+    <img src="docs/rag_diagram.png" alt="Description of the image" width="800">
+</div>
+
+## Technologies
+- **Language**: Python 3.12
+- **LLM**:
+    - Ollama (for local deployment and some tests) - slow for long executions [using gemma2, llama3.1 and phi3.5]
+    - OpenAI (gpt-4o-mini)
+- **Knowledge base**: [FAISS](https://faiss.ai/index.html)
+- **Interface**: Gradio (UI)
+- **Ingestion Pipeline**: Automated ingestion customized for the use-case. Implemented with LangChain and other complementary libraries.
+- **Monitoring**: WIP
+
+
+## Dataset
+The used dataset for this project is **dynamic** as it depends on the user interests.
+
+We can consider the next datasets as the foundations of this project:
+* **YouTuve Video (Audio Transcripts)**: Provide the video URL and the **_Data Ingestion Pipeline_** will solve the acquisition of the video transcript and its processing.
+* **Websites, Web Articles and Wikis**: Provide the URL of the desired document to be included and the **_Data Ingestion Pipeline_** will read it as a website and leave it ready for the usage.
+
+The data to validate and test the LLM can be found [here](src/app.py) and [here](src/evaluate_create_groundtruth_dataset.py) (Public URLs accessible by anyone).
+
+# Detailed information
 ## 1. Problem Description: Interactive Content Exploration Tool
 
 
@@ -78,32 +134,6 @@ This solution aims to enhance user engagement, streamline content exploration, a
 - **Innovation:** Positions your business as a leader in integrating advanced technologies for content interaction.
 </details>
 
-# Diagram & Services
-
-<div style="text-align: center;">
-    <img src="docs/rag_diagram.png" alt="Description of the image" width="800">
-</div>
-
-## Technologies
-- **Language**: Python 3.12
-- **LLM**:
-    - Ollama (for local deployment and some tests) - slow for long executions [using gemma2, llama3.1 and phi3.5]
-    - OpenAI (gpt-4o-mini)
-- **Knowledge base**: [FAISS](https://faiss.ai/index.html)
-- **Interface**: Gradio (UI)
-- **Ingestion Pipeline**: Automated ingestion customized for the use-case. Implemented with LangChain and other complementary libraries.
-- **Monitoring**: WIP
-
-
-## Dataset
-The used dataset for this project is **dynamic** as it depends on the user interests.
-
-We can consider the next datasets as the foundations of this project:
-* **YouTuve Video (Audio Transcripts)**: Provide the video URL and the **_Data Ingestion Pipeline_** will solve the acquisition of the video transcript and its processing.
-* **Websites, Web Articles and Wikis**: Provide the URL of the desired document to be included and the **_Data Ingestion Pipeline_** will read it as a website and leave it ready for the usage.
-
-The data to validate and test the LLM can be found [here](src/app.py) and [here](src/evaluate_create_groundtruth_dataset.py) (Public URLs accessible by anyone).
-
 ## 2. RAG flow
 - A **Knowledge base** in [FAISS](src/rag/rag.py) is used.
 - A **LLM** is used as well, querying on top of the gathered Knowledge base.
@@ -150,25 +180,63 @@ The UI implemented in gradio is presented [here](src/app.py).
 
 
 ## 7. Monitoring
-WIP
-<!-- 0 points: No monitoring
-1 point: User feedback is collected OR there's a monitoring dashboard
-2 points: User feedback is collected and there's a dashboard with at least 5 charts -->
+Not implemented, but easily a database and user questions and answers can be saved.
 
+## 8. Containerization & Reproducibility
 
-## 8. Containerization
-WIP
+### Dockerfile
+A [Dockerfile](/Dockerfile) was implemented to load the Gradio app with all the [requirements](/requirements.txt). With this Dockerfile is possible to run the App consuming a local Ollama service.
+
+Using a local Ollama service make sure you:
+1. [Installed it](https://ollama.com/download)
+2. It is running ```ollama serve```, to serve the models
+3. You have downloaded the required models:
+    ```
+    ollama pull mxbai-embed-large
+    ollama pull gemma2
+    ollama pull phi3.5
+    ```
+
+To run the Dockerfile follow the next steps:
+1. Build the Dockerfile
+    ```
+    docker build -t llm-url_video-rag .
+    ```
+2. Validate Ollamma is running as shown before
+3. Run the app (Make sure the used port to serve Ollama is 7860 - default Ollama port)
+    ```
+    docker run --network="host" -p 7860:7860 llm-url_video-rag
+    ```
+4. Open the UI url in your browser. It expects to be http://localhost:7860/
+
+### Docker Compose
+As well a **fully implemented [docker-compose](/docker-compose.yaml)** was developed to manage the full app (including its local Ollama service model).
+
+To run the docker compose follow the next steps:
+1. Make sure you build the Dockerfile (as shown before)
+2. Install the Ollama required models. Execute in the console:
+    ```
+    docker compose exec ollama ollama pull mxbai-embed-large
+    docker compose exec ollama ollama pull gemma2
+    docker compose exec ollama ollama pull phi3.5
+    ```
+3. Execute the Docker Compose (make sure the local Ollama is disabled -if you have it-, the port 11434 needs to be available)
+    ```
+    docker compose up
+    ```
+4. Open the UI url in your browser. It expects to be http://localhost:7860/
+
 <!-- 0 points: No containerization
 1 point: Dockerfile is provided for the main application OR there's a docker-compose for the dependencies only
 2 points: Everything is in docker-compose -->
 
-## 9. Reproducibility
+### Reproducibility
+The reproducibility of this project is very high as we have available the instructions to:
+    - Get the data (it is dynamic and public URLs so its always available)
+    - Execute the code (Easy with Docker compose and Dockerfile)
+    - All the dependencies and its versions are provided
 
-0 points: No instructions on how to run the code, the data is missing, or it's unclear how to access it
-1 point: Some instructions are provided but are incomplete, OR instructions are clear and complete, the code works, but the data is missing
-2 points: Instructions are clear, the dataset is accessible, it's easy to run the code, and it works. The versions for all dependencies are specified.
-
-## 10. Best practices
+## 9. Best practices
  
 ### Hybrid search
 **Implemented as mentioned above** (Retrieval evaluation) (vector search and keyword search), implemented [here](src/rag/rag.py) and evaluated as showed before.
@@ -177,7 +245,7 @@ WIP
     <img src="docs/hit_rate_plot.png" alt="Description of the image" width="600">
 </div>
 
-## Document re-ranking
+### Document re-ranking
 The documents are re-ranked in multiple cases as described above. The implementation can be found [here](src/rag/rag.py)
 
 <div style="text-align: center;">
@@ -188,6 +256,6 @@ The documents are re-ranked in multiple cases as described above. The implementa
     <img src="docs/model_similarity_bar_chart.png" alt="Description of the image" width="600">
 </div>
 
-## User query rewriting
+### User query rewriting
 The query rewritting is implemented [here](src/rag/query_rewrite.py), in order to improve the user input.
 
